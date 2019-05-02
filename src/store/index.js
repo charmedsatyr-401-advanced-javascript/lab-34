@@ -1,13 +1,16 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
 
-import reporter from './middleware/reporter.js';
+import reporter from '../middleware/reporter.js';
 
-import recordsReducer from './records-reducer.js';
+import recordsReducer from '../reducers/records-reducer.js';
+import schemaReducer from '../reducers/schema-reducer.js';
 
-let reducers = combineReducers({
+const reducers = combineReducers({
   records: recordsReducer,
+  schema: schemaReducer,
 });
 
-const store = () => createStore(reducers, composeWithDevTools(applyMiddleware(reporter)));
+const store = () => createStore(reducers, composeWithDevTools(applyMiddleware(thunk, reporter)));
 export default store;

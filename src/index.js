@@ -7,13 +7,10 @@ import App from './components/app.js';
 import createStore from './store/';
 const store = createStore();
 
-function Main() {
-  return (
-    <Provider store={store}>
-      <App />
-    </Provider>
-  );
-}
-
 const rootElement = document.getElementById('root');
-ReactDOM.render(<Main />, rootElement);
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  rootElement
+);

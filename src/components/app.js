@@ -6,46 +6,37 @@ import Record from './record';
 
 import './app.scss';
 
-import superagent from 'superagent';
-
-// Remote
-import API_SERVER_URL from '../api-server-url';
-
-// Fallback
-import schema from '../players.schema.json';
-
-import * as actions from '../store/records-actions.js';
+import * as r from '../actions/records-actions';
+import * as s from '../actions/schema-actions';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { remoteSchema: false, schema };
+    this.state = { model: 'players' };
   }
   deleteRecord = id => this.props.handleDelete(id);
-  getRemoteSchema = () => {
-    if (this.state.remoteSchema) {
-      superagent.get(API_SERVER_URL).then(newSchema => {
-        this.setState({ schema: newSchema.body });
-        console.log('state:', this.state.schema);
-      });
+
+  getSchema = () => {
+    if (this.props.schema.cache[this.state.model]) {
+      this.props.updateActiveSchema(this.state.model);
     } else {
-      this.setState({ schema });
+      this.props.getSchema(this.state.model);
     }
   };
-  setSchema = () => {
-    this.setState({ remoteSchema: !this.state.remoteSchema }, () => {
-      this.getRemoteSchema();
+  setModel = () => {
+    this.setState({ model: this.state.model === 'players' ? 'teams' : 'players' }, () => {
+      this.getSchema();
     });
   };
   componentDidMount() {
-    this.getRemoteSchema();
+    this.getSchema();
   }
   render() {
     const content = this.props.records.list.map((record, index) => (
       <li key={record._id}>
         {record.name}
         <button onClick={() => this.deleteRecord(record._id)}>Delete</button>
-        <Record record={record} schema={this.state.schema} />
+        <Record record={record} schema={this.props.schema.active} />
       </li>
     ));
 
@@ -55,27 +46,27 @@ class App extends Component {
           <h3>Choose Your Schema</h3>
           <fieldset>
             <legend>Remember: don't mix records with different schemas!</legend>
-            <label htmlFor="local">Local</label>
+            <label htmlFor="players">Players</label>
             <input
-              id="local"
+              id="players"
               type="radio"
               name="schema"
-              value="local"
-              checked={!this.state.remoteSchema}
-              onChange={this.setSchema}
+              value="players"
+              checked={this.state.model === 'players'}
+              onChange={this.setModel}
             />
-            <label htmlFor="remote">Remote</label>
+            <label htmlFor="teams">Teams</label>
             <input
-              id="remote"
+              id="teams"
               type="radio"
               name="schema"
-              value="remote"
-              checked={this.state.remoteSchema}
-              onChange={this.setSchema}
+              value="teams"
+              checked={this.state.model === 'teams'}
+              onChange={this.setModel}
             />
           </fieldset>
         </div>
-        <NewRecord schema={this.state.schema} />
+        <NewRecord schema={this.props.schema.active} />
         <div>
           <h3>Current Records</h3>
           <ul>{content}</ul>
@@ -87,10 +78,13 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   records: state.records,
+  schema: state.schema,
 });
 
 const mapDispatchToProps = (dispatch, getState) => ({
-  handleDelete: id => dispatch(actions.destroy(id)),
+  handleDelete: id => dispatch(r.destroy(id)),
+  getSchema: model => dispatch(s.getSchema(model)),
+  updateActiveSchema: model => dispatch(s.updateActiveSchema(model)),
 });
 
 export default connect(

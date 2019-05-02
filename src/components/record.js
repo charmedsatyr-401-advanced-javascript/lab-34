@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Form from 'react-jsonschema-form';
 
-import * as actions from '../store/records-actions.js';
+import * as actions from '../actions/records-actions.js';
 
 const uiSchema = {
   _id: { 'ui:widget': 'hidden' },
@@ -17,7 +17,7 @@ class Record extends Component {
   };
 
   render() {
-    return (
+    return this.props.schema ? (
       <>
         <div>
           <h4>Edit Record</h4>
@@ -29,7 +29,7 @@ class Record extends Component {
           />
         </div>
       </>
-    );
+    ) : null;
   }
 }
 

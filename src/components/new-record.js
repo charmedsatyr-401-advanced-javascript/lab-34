@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import * as actions from '../actions/records-actions';
+import * as r from '../actions/records-actions';
 
 import Form from 'react-jsonschema-form';
 
@@ -11,10 +11,12 @@ const uiSchema = {
 };
 
 class NewRecord extends Component {
-  deleteRecord = id => this.props.handleDelete(id);
-  handleSubmit = ({ formData }, e) => this.props.handlePost(formData);
+  handleSubmit = ({ formData }, e) => {
+    const model = this.props.schema.active.title;
+    this.props.handlePost(formData, model);
+  };
+
   render() {
-    console.log('this.props.schema', this.props.schema.active.title);
     return this.props.schema ? (
       <div>
         <h3>Add New {this.props.schema.active.title}</h3>
@@ -25,12 +27,11 @@ class NewRecord extends Component {
 }
 
 const mapStateToProps = state => ({
-  records: state.records,
   schema: state.schema,
 });
 
 const mapDispatchToProps = (dispatch, getState) => ({
-  handlePost: payload => dispatch(actions.post(payload)),
+  handlePost: (payload, model) => dispatch(r.post(payload, model)),
 });
 
 export default connect(

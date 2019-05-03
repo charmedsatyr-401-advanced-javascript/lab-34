@@ -1,4 +1,14 @@
-import players, { example, dumbId } from './records-reducer';
+import players from './records-reducer';
+
+export const example = {
+  name: 'Stu',
+  position: 'C',
+  throws: 'L',
+  bats: 'L',
+  team: 'Dodgers',
+  _id: 1111,
+  __v: 3,
+};
 
 describe('players reducer', () => {
   const mickey = {
@@ -7,7 +17,7 @@ describe('players reducer', () => {
     throws: 'L',
     bats: 'L',
     team: 'Dodgers',
-    _id: dumbId(),
+    _id: 2222,
     __v: 4,
   };
   it('should POST', () => {

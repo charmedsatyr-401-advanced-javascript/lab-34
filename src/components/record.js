@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Form from 'react-jsonschema-form';
 
-import * as actions from '../actions/records-actions.js';
+import * as ra from '../actions/records-actions.js';
 
 const uiSchema = {
   _id: { 'ui:widget': 'hidden' },
@@ -12,10 +12,15 @@ const uiSchema = {
 
 class Record extends Component {
   handleSubmit = ({ formData }) => {
-    // this.props.handlePatch(formData);
-    this.props.handlePut(formData);
+    // The record we send to the server should have all its properties;
+    // _id and __v are missing from the formData. Merge formData with
+    // the original record.
+    const model = this.props.schema.title;
+    const { record } = this.props;
+    const payload = Object.assign({}, record, formData);
+    // this.props.handlePatch(payload, model);
+    this.props.handlePut(payload, model);
   };
-
   render() {
     return this.props.schema ? (
       <>
@@ -34,9 +39,8 @@ class Record extends Component {
 }
 
 const mapDispatchToProps = (dispatch, getState) => ({
-  handlePatch: payload => dispatch(actions.patch(payload)),
-  handlePost: payload => dispatch(actions.post(payload)),
-  handlePut: payload => dispatch(actions.put(payload)),
+  handlePatch: (payload, model) => dispatch(ra.patch(payload, model)),
+  handlePut: (payload, model) => dispatch(ra.put(payload, model)),
 });
 
 export default connect(

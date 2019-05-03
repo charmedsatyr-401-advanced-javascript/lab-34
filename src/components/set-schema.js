@@ -4,13 +4,15 @@ import { connect } from 'react-redux';
 import * as r from '../actions/records-actions';
 import * as s from '../actions/schema-actions';
 
+import models from '../lib/set-models';
+
 class SetSchema extends Component {
   constructor(props) {
     super(props);
-    this.state = { model: 'players' };
+    this.state = { model: models[0] };
   }
-  setModel = () => {
-    this.setState({ model: this.state.model === 'players' ? 'teams' : 'players' }, () => {
+  setModel = model => {
+    this.setState({ model }, () => {
       this.getSchema();
     });
   };
@@ -26,29 +28,28 @@ class SetSchema extends Component {
   }
 
   render() {
+    const inputs = models.map((model, i) => {
+      return (
+        <span key={`model-${i}`}>
+          <label htmlFor={model}>{model}</label>
+          <input
+            id={model}
+            type="radio"
+            name="schema"
+            value={model}
+            checked={this.state.model === model}
+            onChange={() => this.setModel(model)}
+          />
+        </span>
+      );
+    });
+
     return (
       <div>
         <h3>Choose Your Schema</h3>
         <fieldset>
-          <legend>Add a new team or player?</legend>
-          <label htmlFor="players">Players</label>
-          <input
-            id="players"
-            type="radio"
-            name="schema"
-            value="players"
-            checked={this.state.model === 'players'}
-            onChange={this.setModel}
-          />
-          <label htmlFor="teams">Teams</label>
-          <input
-            id="teams"
-            type="radio"
-            name="schema"
-            value="teams"
-            checked={this.state.model === 'teams'}
-            onChange={this.setModel}
-          />
+          <legend>What kind of record?</legend>
+          {inputs}
         </fieldset>
       </div>
     );

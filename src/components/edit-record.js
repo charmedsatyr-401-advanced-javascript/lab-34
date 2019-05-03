@@ -10,7 +10,7 @@ const uiSchema = {
   __v: { 'ui:widget': 'hidden' },
 };
 
-class Record extends Component {
+class EditRecord extends Component {
   handleSubmit = ({ formData }) => {
     // The record we send to the server should have all its properties;
     // _id and __v are missing from the formData. Merge formData with
@@ -46,4 +46,4 @@ const mapDispatchToProps = (dispatch, getState) => ({
 export default connect(
   null,
   mapDispatchToProps
-)(Record);
+)(EditRecord);

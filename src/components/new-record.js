@@ -19,7 +19,7 @@ class NewRecord extends Component {
   render() {
     return this.props.schema ? (
       <div>
-        <h3>Add New {this.props.schema.active.title}</h3>
+        <h3>Add New {this.props.schema.active.title || 'Records'}</h3>
         <Form schema={this.props.schema.active} uiSchema={uiSchema} onSubmit={this.handleSubmit} />
       </div>
     ) : null;

@@ -9,7 +9,7 @@ import models from '../lib/set-models';
 class SetSchema extends Component {
   constructor(props) {
     super(props);
-    this.state = { model: models[0] };
+    this.state = { model: models.child };
   }
   setModel = model => {
     this.setState({ model }, () => {
@@ -28,7 +28,11 @@ class SetSchema extends Component {
   }
 
   render() {
-    const inputs = models.map((model, i) => {
+    let inputs = [];
+    for (let model in models) {
+      inputs.push(models[model]);
+    }
+    inputs = inputs.map((model, i) => {
       return (
         <span key={`model-${i}`}>
           <label htmlFor={model}>{model}</label>

@@ -30,7 +30,7 @@ class Records extends Component {
     this.setState({ active: record });
   };
   componentDidMount() {
-    const model = this.props.schema.active.title || models[0];
+    const model = this.props.schema.active.title || models.child;
     if (model) {
       this.props.handleGet(model);
     }

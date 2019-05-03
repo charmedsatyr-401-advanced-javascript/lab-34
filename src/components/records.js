@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import * as ra from '../actions/records-actions';
-import * as sa from '../actions/schema-actions';
 
 import EditRecord from './edit-record';
 import models from '../lib/set-models';
@@ -12,6 +11,17 @@ class Records extends Component {
     super(props);
     this.state = { active: null };
   }
+  handleEdit = ({ formData }, record) => {
+    // The record we send to the server should have all its properties;
+    // _id and __v are missing from the formData. Merge formData with
+    // the original record.
+    const model = this.props.schema.active.title;
+    const payload = Object.assign({}, record, formData);
+    // this.props.handlePatch(payload, model);
+    this.props.handlePut(payload, model);
+    this.setState({ active: null });
+  };
+
   handleDelete = record => {
     const model = this.props.schema.active.title;
     this.props.handleDelete(record, model);
@@ -22,7 +32,7 @@ class Records extends Component {
   componentDidMount() {
     const model = this.props.schema.active.title || models[0];
     if (model) {
-      this.props.getAll(model);
+      this.props.handleGet(model);
     }
   }
   render() {
@@ -31,7 +41,11 @@ class Records extends Component {
         {record.name} <button onClick={() => this.setActive(record)}>Edit</button>
         <button onClick={() => this.handleDelete(record)}>Delete</button>
         {this.state.active && this.state.active._id === record._id && (
-          <EditRecord record={this.state.active} schema={this.props.schema.active} />
+          <EditRecord
+            record={this.state.active}
+            schema={this.props.schema.active}
+            handleEdit={this.handleEdit}
+          />
         )}
       </li>
     ));
@@ -51,10 +65,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = (dispatch, getState) => ({
-  getAll: model => dispatch(ra.get(model)),
+  handleGet: model => dispatch(ra.get(model)),
   handleDelete: (payload, model) => dispatch(ra.destroy(payload, model)),
-  getSchema: model => dispatch(sa.getSchema(model)),
-  updateActiveSchema: model => dispatch(sa.updateActiveSchema(model)),
+  handlePatch: (payload, model) => dispatch(ra.patch(payload, model)),
+  handlePut: (payload, model) => dispatch(ra.put(payload, model)),
 });
 
 export default connect(
